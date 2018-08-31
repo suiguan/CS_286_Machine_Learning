@@ -196,9 +196,9 @@ def main():
    N = 2
    M = len(observationSet)
    T = 50000
-   minIterations = 100
+   minIterations = 20
    epsilon = 10
-   numRandomInit = 1
+   numRandomInit = 2
    
    #first, read the entire txt
    print("reading the text file")
@@ -212,7 +212,7 @@ def main():
    for ch in txt:
       obser = observationSet.find(ch.lower())
       if obser >= 0: obserSeq.append(obser)
-      if len(observationSet) >= T: break
+      if len(obserSeq) >= T: break
 
    #start training an HMM
    print("start HMM training, unique observation str = %s" % observationSet)
