@@ -1,6 +1,7 @@
 import math
 import random
 import numpy as np
+import sys
 
 try:
    from sys import maxint
@@ -31,7 +32,8 @@ class HMM:
    def getNorm(self, pList):
       s = sum(pList)
       norm = [float(p) / s for p in pList]
-      if round(sum(norm), 6) != 1: raise Exception("invalid normalized")
+      #if sum(norm) != 1: norm[-1] = 1 - sum(norm[:-1])
+      #if sum(norm) != 1.0: raise Exception("invalid normalized, norm %s, sum = %s" % (norm, sum(norm)))
       return norm
 
    def randomInit(self):
@@ -56,21 +58,17 @@ class HMM:
       for i in range(self.N): self.PI.append(self.getRandVal(self.N))
       self.PI = self.getNorm(self.PI)
 
-      #print("randomInit A = %s" % self.A)
-      #print("randomInit B = %s" % self.B)
-      #print("randomInit PI = %s" % self.PI)
+      print("randomInit A = %s" % self.A)
+      print("randomInit B = %s" % self.B)
+      print("randomInit PI = %s" % self.PI)
 
    def forwardPass(self, obserSeq):
       #compute a0(i)
-      for t in range(len(obserSeq)):
-         for i in range(self.N): 
-            if t == 0:
-                _a = self.PI[i] * self.B[i][obserSeq[0]]
-                self.alpha[t][i] = _a
-                self.c[0] += _a 
-                continue
-            #self.alpha[t][i] = 0
-            
+      self.c[0] = 0
+      for i in range(self.N): 
+          _a = self.PI[i] * self.B[i][obserSeq[0]]
+          self.alpha[0][i] = _a
+          self.c[0] = self.c[0] + _a 
 
       # scale the a0(i)
       self.c[0] = 1 / self.c[0] 
@@ -79,7 +77,9 @@ class HMM:
       
       # compute at(i)
       for t in range(1, len(obserSeq)):
+         self.c[t] = 0
          for i in range(self.N):
+            self.alpha[t][i] = 0
             for j in range(self.N):
                self.alpha[t][i] = self.alpha[t][i] + (self.alpha[t-1][j]*self.A[j][i])
             self.alpha[t][i] = self.alpha[t][i] * self.B[i][obserSeq[t]]
@@ -95,16 +95,13 @@ class HMM:
       T = len(obserSeq)
 
       #let beta_t-1(i) = 1 scaled by cT-1
-      for t in range(T):
-         for i in range(self.N):
-            if t == T - 1:
-               self.beta[t][i] = self.c[t]
-               continue
-            #self.beta[t][i] = 0
+      for i in range(self.N):
+         self.beta[T-1][i] = self.c[T-1]
 
       #beta-pass
       for t in reversed(range(T-1)):
          for i in range(self.N):
+            self.beta[t][i] = 0
             for j in range(self.N):
                self.beta[t][i] = self.beta[t][i] + (self.A[i][j]*self.B[j][obserSeq[t+1]]*self.beta[t+1][j])
 
@@ -114,33 +111,34 @@ class HMM:
    def calcGammaDigamma(self, obserSeq):
       T = len(obserSeq)
       for t in range(T - 1):
-         denom = 0
-         for i in range(self.N):
-            #self.gamma[t][i] = 0
-            for j in range(self.N):
-               #self.diGamma[t][i][j] = 0
-               denom = denom + (self.alpha[t][i]*self.A[i][j]*self.B[j][obserSeq[t+1]]*self.beta[t+1][j])
+         #denom = 0
+         #for i in range(self.N):
+         #   #self.gamma[t][i] = 0
+         #   for j in range(self.N):
+         #      #self.diGamma[t][i][j] = 0
+         #      denom = denom + (self.alpha[t][i]*self.A[i][j]*self.B[j][obserSeq[t+1]]*self.beta[t+1][j])
 
          for i in range(self.N):
+            self.gamma[t][i] = 0
             for j in range(self.N):
-               self.diGamma[t][i][j] = (self.alpha[t][i]*self.A[i][j]*self.B[j][obserSeq[t+1]]*self.beta[t+1][j]) / denom
+               #No need to normalize since using scaled alpha and beta
+               self.diGamma[t][i][j] = (self.alpha[t][i]*self.A[i][j]*self.B[j][obserSeq[t+1]]*self.beta[t+1][j]) #/ denom
                self.gamma[t][i] = self.gamma[t][i] + self.diGamma[t][i][j]
 
-      #add gamma_t-1(i)
-      #self.gamma.append([])
-
       #special case for gamma_t-1(i)
-      denom = 0
-      for i in range(self.N): denom = denom + self.alpha[T-1][i]
-      for i in range(self.N): self.gamma[T-1][i] = self.alpha[T-1][i] / denom
+      #denom = 0
+      #for i in range(self.N): denom = denom + self.alpha[T-1][i]
+      #No need to normalize since using scaled alpha and beta
+      for i in range(self.N): self.gamma[T-1][i] = self.alpha[T-1][i] #/ denom
 
 
    def reEstimateModel(self, obserSeq):
       T = len(obserSeq)
 
       #re-estimate PI
-      for i in range(self.N):
-         self.PI[i] = self.gamma[0][i]
+      for i in range(self.N): self.PI[i] = self.gamma[0][i]
+      #if sum(self.PI) != 1: self.PI[-1] = 1 - sum(self.PI[:-1])
+      #if sum(self.PI) != 1: raise Exception("re-estimate PI invalid %s" % self.PI)
 
       #re-estimate A
       for i in range(self.N):
@@ -152,22 +150,28 @@ class HMM:
                denom += self.gamma[t][i]
             if numer == 0: self.A[i][j] = 0 
             else: self.A[i][j] = numer / denom
+         #if sum(self.A[i]) != 1: self.A[i][-1] = 1 - sum(self.A[i][:-1])
+         #if sum(self.A[i]) != 1: raise Exception("re-estimate A invalid, %d %s", i, self.A[i])
 
       #re-estimate B
       for i in range(self.N):
          for j in range(self.M):
             numer = 0
-            demon = 0
+            denom = 0
             for t in range(T):
                if obserSeq[t] == j: numer += self.gamma[t][i]
                denom += self.gamma[t][i]
-            self.B[i][j] = numer / denom
+            if numer == 0: self.B[i][j] = 0
+            else: self.B[i][j] = numer / denom
+         #if sum(self.B[i]) != 1: self.B[i][-1] = 1 - sum(self.B[i][:-1])
+         #if sum(self.B[i]) != 1: raise Exception("re-estimate B invalid, %d, %s", i, self.B[i])
 
 
    def getScore(self, obserSeq):
       T = len(obserSeq)
       logProb = 0
-      for t in range(T): logProb += math.log(self.c[t]) 
+      for t in range(T): 
+         logProb += math.log(self.c[t]) 
       return -logProb
 
 
@@ -176,8 +180,8 @@ class HMM:
       iters = 0
       logProb = 1 
       diff = maxint
+      self.setupTable(len(obserSeq))
       while iters < self.minIters or diff > self.epsilon:
-         self.setupTable(len(obserSeq))
          self.forwardPass(obserSeq)
          self.backwardPass(obserSeq)
          self.calcGammaDigamma(obserSeq)
@@ -194,11 +198,13 @@ def main():
    #hyperparameters:
    observationSet = 'abcdefghijklmnopqrstuvwxyz '
    N = 2
+   if len(sys.argv) > 1: N = int(sys.argv[1])
+   if N < 1: raise Exception("Invalid N %d" % N)
+
    M = len(observationSet)
    T = 50000
-   minIterations = 20
-   epsilon = 10
-   numRandomInit = 2
+   minIterations = 200
+   epsilon = 0.01
    
    #first, read the entire txt
    print("reading the text file")
@@ -220,17 +226,16 @@ def main():
 
    #create an HMM
    hmm = HMM(N, M, minIterations, epsilon) 
-   for i in range(numRandomInit - 1): hmm.randomInit()
 
    #fit the HMM with obserSeq
    A, B, PI = hmm.fit(obserSeq)
 
    #HMM training finished
    print("HMM training finished. Model:")
-   print("====== A ======")
-   for i in range(N): print("state %d = %s" % (i, A[i]))
-   print("====== B ======")
-   for i in range(N): print("state %d = %s" % (i, B[i]))
+   print("====== A ======", A)
+   #for i in range(N): print("state %d = %s" % (i, A[i]))
+   print("====== B ======", B)
+   #for i in range(N): print("state %d = %s" % (i, B[i]))
    print("PI = %s" % PI)
 
 if __name__ == '__main__':
