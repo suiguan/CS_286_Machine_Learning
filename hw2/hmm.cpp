@@ -3,9 +3,12 @@
 #include <cstdlib>
 #include <cmath>
 #include <string>
+#include <fstream>
 #include "hmm.h"
 
 #define MAX_INT 9223372036854775807
+
+static const std::string ObserSet = "abcdefghijklmnopqrstuvwxyz";
 
 HMM::HMM(int N, int M, int minIters, float epsilon)
 {
@@ -77,9 +80,9 @@ void HMM::printModel()
       printf("%s\n", msg.c_str());
    }
    printf("B = \n");
-   for (int i = 0; i < mN; i++) {
-      std::string msg = std::to_string(i) + ": ";
-      for (int j = 0; j < mM; j++) {
+   for (int j = 0; j < mM; j++) {
+      std::string msg = std::string(1, ObserSet[j]) + ": ";
+      for (int i = 0; i < mN; i++) {
          msg += std::to_string(*getB(i, j)) + " ";
       }
       printf("%s\n", msg.c_str());
@@ -109,13 +112,17 @@ void HMM::fit(int* obserArr, int T)
       diff = std::abs(logProb - mOldLogProb); 
       mOldLogProb = logProb;
 
-      if (iters % 100 == 0) {
-         printf("score = %.3f\n", logProb);
+      //if (iters % 10 == 0) {
          printModel();
-      }
+         printf("%d_score = %.3f\n========================================\n\n", iters, logProb);
+      //}
 
       iters += 1;
    }
+
+   printf("HMM trained\n");
+   printModel();
+   printf("%d_score = %.3f\n========================================\n\n", iters, logProb);
 }
 
 float HMM::getScore(int* obserArr, int T)
@@ -308,7 +315,7 @@ void HMM::reEstimateModel(int* obserArr, int T)
 
    //re-estimate B
    for (int idx = 0; idx < mN; idx++) {
-      for (int jdx = 0; jdx < mN; jdx++) {
+      for (int jdx = 0; jdx < mM; jdx++) {
          float numer = 0;
          float denom = 0;
          for (int t = 0; t < T; t++) {
@@ -345,7 +352,7 @@ float* HMM::getAlpha(int t, int i)
 }
 float* HMM::getBeta(int t, int i)
 {
-   return mAlpha + (t*mN) + i;
+   return mBeta + (t*mN) + i;
 }
 float* HMM::getGamma(int t, int i)
 {
@@ -356,16 +363,55 @@ float* HMM::getDiGamma(int t, int i, int j)
    return mDiGamma + (t*mN*mN) + (i*mN) + j;
 }
 
-int main() {
-   int N = 2;
-   int M = 2;
-   int T = 10;
-   int minIters = 1000;
-   int epsilon = 0.00001;
 
+int main(int argc, const char** argv) {
+   if (argc != 5) {
+      printf("Usage: %s <N> <txt> <T> <minIters>\n", argv[0]);
+      return -1;
+   }
+
+   const int N = std::stoi(argv[1]);
+   const int M = ObserSet.length();
+   int T = std::stoi(argv[3]);
+   const int minIters = std::stoi(argv[4]);
+   const float epsilon = 0.00001;
+   int* obsers = (int*)malloc(T*sizeof(int));
+   if (!obsers) {
+      printf("no memory\n");
+      return -2;
+   }
+
+   //prepare observation sequence from txt file
+   printf("using txt file %s\n", argv[2]);
+   std::ifstream is(argv[2], std::ifstream::in);
+   char c;
+   int i = 0;
+   while (is.get(c)) {
+      int idx = ObserSet.find(c);
+      if (idx == std::string::npos) continue;
+      obsers[i] = idx;
+      i++;
+      if (i >= T) break;
+   }
+   is.close();
+   if (i < T) {
+      printf("file %s has %d less than %d chars\n", argv[2], i, T);
+      T = i;
+   }
+
+   //start training
    HMM* hmm = new HMM(N, M, minIters, epsilon);
-   int obsers[T] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+   if (!hmm) {
+      printf("no memory\n");
+      return -3;
+   }
+
+   printf("start training HMM for seq N = %d, M = %d, minIters = %d, eps = %.6f, T = %d\n", N, M, minIters, epsilon, T);
    hmm->fit(obsers, T);
+
+   //clean up and exit
+   delete hmm;
+   free(obsers);
    return 0;
 }
 
