@@ -374,7 +374,7 @@ int main(int argc, const char** argv) {
    const int M = ObserSet.length();
    int T = std::stoi(argv[3]);
    const int minIters = std::stoi(argv[4]);
-   const float epsilon = 0.00001;
+   const float epsilon = 0.1;
    int* obsers = (int*)malloc(T*sizeof(int));
    if (!obsers) {
       printf("no memory\n");
