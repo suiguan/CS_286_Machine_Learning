@@ -187,7 +187,8 @@ class HMM:
          self.calcGammaDigamma(obserSeq)
          self.reEstimateModel(obserSeq)
          logProb = self.getScore(obserSeq)
-         if iters % 10 == 0: print("%d: score = %s" % (iters, logProb))
+         #if iters % 10 == 0: print("%d: score = %s" % (iters, logProb))
+         print("%d: score = %s" % (iters, logProb))
          diff = abs(logProb - self.oldLogProb)
          self.oldLogProb = logProb
          iters += 1
@@ -203,7 +204,7 @@ def main():
 
    M = len(observationSet)
    T = 50000
-   minIterations = 200
+   minIterations = 20
    epsilon = 0.01
    
    #first, read the entire txt

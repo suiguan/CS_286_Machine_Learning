@@ -365,16 +365,16 @@ float* HMM::getDiGamma(int t, int i, int j)
 
 
 int main(int argc, const char** argv) {
-   if (argc != 5) {
-      printf("Usage: %s <N> <txt> <T> <minIters>\n", argv[0]);
+   if (argc != 6) {
+      printf("Usage: %s <txt> <N> <T> <minIters> <epsilon>\n", argv[0]);
       return -1;
    }
 
-   const int N = std::stoi(argv[1]);
+   const int N = std::stoi(argv[2]);
    const int M = ObserSet.length();
    int T = std::stoi(argv[3]);
    const int minIters = std::stoi(argv[4]);
-   const float epsilon = 0.1;
+   const float epsilon = std::stof(argv[5]);
    int* obsers = (int*)malloc(T*sizeof(int));
    if (!obsers) {
       printf("no memory\n");
@@ -382,8 +382,8 @@ int main(int argc, const char** argv) {
    }
 
    //prepare observation sequence from txt file
-   printf("using txt file %s\n", argv[2]);
-   std::ifstream is(argv[2], std::ifstream::in);
+   printf("using txt file %s\n", argv[1]);
+   std::ifstream is(argv[1], std::ifstream::in);
    char c;
    int i = 0;
    while (is.get(c)) {
