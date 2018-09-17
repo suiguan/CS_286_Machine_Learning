@@ -382,6 +382,29 @@ float* HMM::getDiGamma(int t, int i, int j)
 }
 
 
+//predict the simple shift key assume 
+//HHM is trained with: A is fixed digraph matrix, N = M = 26
+static void predictMapping(HMM* hmm) {
+   //this is the group truth key to be compared
+   //e.g., gtKey[0] = 4, then 'a'(0) maps to 'e'(4)
+   static const int gtKey[26] = {4, 9, 21, 6, 25, 23, 13, 8, 1, 7, 15, 22, 18, 3, 17, 16, 0, 20, 12, 5, 2, 11, 14, 24, 10, 19};
+
+   int cor = 0;
+   for (int i = 0; i < 26; i++) {
+      float maxP = 0.0;
+      int maxJ = -1;
+      for (int j = 0; j < 26; j++) {
+         if (*hmm->getB(j, i) >= maxP) {
+            maxP = *hmm->getB(j, i);
+            maxJ = j;
+         }
+      }
+      if (gtKey[maxJ] == i) cor++;
+      printf("maxJ %d, %.3f, comp %d with %d, cor %d\n", maxJ, maxP, gtKey[maxJ], i, cor);
+   }
+   printf("cor = %d\n", cor);
+}
+
 int main(int argc, const char** argv) {
    if (argc != 6) {
       printf("Usage: %s <txt> <N> <T> <minIters> <epsilon>\n", argv[0]);
@@ -426,6 +449,10 @@ int main(int argc, const char** argv) {
 
    printf("start training HMM for seq N = %d, M = %d, minIters = %d, eps = %.6f, T = %d\n", N, M, minIters, epsilon, T);
    hmm->fit(obsers, T);
+
+#ifdef USE_FIXED_DIGRAPH
+   predictMapping(hmm);
+#endif
 
    //clean up and exit
    delete hmm;

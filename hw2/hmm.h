@@ -26,11 +26,12 @@ private:
    int mEps;
    float mOldLogProb;
 
-private: //table access
+public: //table access
    float* getA(int i, int j);
    float* getB(int i, int j);
    float* getPI(int i);
 
+private: //table access
    float* getC(int t);
    float* getAlpha(int t, int i);
    float* getBeta(int t, int i);
