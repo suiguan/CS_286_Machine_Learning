@@ -6,6 +6,11 @@
 #include <fstream>
 #include "hmm.h"
 
+#define USE_FIXED_DIGRAPH //enable this define to use a fixed A matrix from a pre-defined digraph
+#ifdef USE_FIXED_DIGRAPH
+#include "AMat.h"
+#endif
+
 #define MAX_INT 9223372036854775807
 
 static const std::string ObserSet = "abcdefghijklmnopqrstuvwxyz";
@@ -137,11 +142,14 @@ void HMM::setupTable(int T)
 {
    freeTables();
 
+#ifndef USE_FIXED_DIGRAPH
    mA = (float*)malloc(mN*mN*sizeof(float));
    if (!mA) {
       printf("No memory!\n");
       exit(-1);
    }
+#endif
+
    mB = (float*)malloc(mN*mM*sizeof(float));
    if (!mB) {
       printf("No memory!\n");
@@ -200,12 +208,16 @@ void HMM::normalizeArr(float* arr, int T)
 void HMM::randomInit()
 {
    srand(time(NULL));
+
+#ifndef USE_FIXED_DIGRAPH
    for (int idx = 0; idx < mN; idx++) {
       for (int jdx = 0; jdx < mN; jdx++) {
          *getA(idx, jdx) = getRandVal(mN);
       }
       normalizeArr(mA+(idx*mN), mN);
    }
+#endif
+
    for (int idx = 0; idx < mN; idx++) {
       for (int jdx = 0; jdx < mM; jdx++) {
          *getB(idx, jdx) = getRandVal(mM);
@@ -299,6 +311,7 @@ void HMM::reEstimateModel(int* obserArr, int T)
    //re-estimate PI
    for (int idx = 0; idx < mN; idx++) *getPI(idx) = *getGamma(0, idx);
 
+#ifndef USE_FIXED_DIGRAPH
    //re-estimate A
    for (int idx = 0; idx < mN; idx++) {
       for (int jdx = 0; jdx < mN; jdx++) {
@@ -312,6 +325,7 @@ void HMM::reEstimateModel(int* obserArr, int T)
          else *getA(idx, jdx) = numer / denom;
       }
    }
+#endif
 
    //re-estimate B
    for (int idx = 0; idx < mN; idx++) {
@@ -331,7 +345,11 @@ void HMM::reEstimateModel(int* obserArr, int T)
 
 float* HMM::getA(int i, int j)
 {
+#ifndef USE_FIXED_DIGRAPH
    return mA + (i*mN) + j;
+#else
+   return &DigraphAMat[i][j];
+#endif
 }
 float* HMM::getB(int i, int j)
 {
