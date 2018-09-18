@@ -107,7 +107,9 @@ void HMM::fit(int* obserArr, int T)
    float diff = MAX_INT;
    setupTable(T);
    randomInit();
+#ifndef _NO_MAIN
    printModel();
+#endif
    while (iters < mMinIters || diff > mEps) {
       logProb = getScore(obserArr, T);
       backwardPass(obserArr, T);
@@ -118,15 +120,19 @@ void HMM::fit(int* obserArr, int T)
       mOldLogProb = logProb;
 
       //if (iters % 10 == 0) {
+#ifndef _NO_MAIN
          printModel();
          printf("%d_score = %.3f\n========================================\n\n", iters, logProb);
+#endif
       //}
 
       iters += 1;
    }
 
    printf("HMM trained\n");
+#ifndef _NO_MAIN
    printModel();
+#endif
    printf("%d_score = %.3f\n========================================\n\n", iters, logProb);
 }
 
@@ -384,7 +390,7 @@ float* HMM::getDiGamma(int t, int i, int j)
 
 //predict the simple shift key assume 
 //HHM is trained with: A is fixed digraph matrix, N = M = 26
-static void predictMapping(HMM* hmm) {
+static int predictMapping(HMM* hmm) {
    //this is the group truth key to be compared
    //e.g., gtKey[0] = 4, then 'a'(0) maps to 'e'(4)
    static const int gtKey[26] = {4, 9, 21, 6, 25, 23, 13, 8, 1, 7, 15, 22, 18, 3, 17, 16, 0, 20, 12, 5, 2, 11, 14, 24, 10, 19};
@@ -400,11 +406,12 @@ static void predictMapping(HMM* hmm) {
          }
       }
       if (gtKey[maxJ] == i) cor++;
-      printf("maxJ %d, %.3f, comp %d with %d, cor %d\n", maxJ, maxP, gtKey[maxJ], i, cor);
    }
    printf("cor = %d\n", cor);
+   return cor;
 }
 
+#ifndef _NO_MAIN
 int main(int argc, const char** argv) {
    if (argc != 6) {
       printf("Usage: %s <txt> <N> <T> <minIters> <epsilon>\n", argv[0]);
@@ -451,7 +458,7 @@ int main(int argc, const char** argv) {
    hmm->fit(obsers, T);
 
 #ifdef USE_FIXED_DIGRAPH
-   predictMapping(hmm);
+   int cor = predictMapping(hmm);
 #endif
 
    //clean up and exit
@@ -459,6 +466,7 @@ int main(int argc, const char** argv) {
    free(obsers);
    return 0;
 }
+#endif
 
 
 
