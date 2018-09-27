@@ -55,7 +55,7 @@ insert_state_end_col = None
 col = 0
 while col < seqLen: 
    if isColumnConservative(majority, col, seqs): #this is match state
-      print("Column %d is a match state M_%d with emission prob:" % (col, match_state_idx))
+      print("Column %d is a MATCH state (M_%d) with emission prob:" % (col, match_state_idx))
       probTable = getEmissionProb(col, col+1, seqs)
       msg = ""
       for key in probTable: msg += "E(%s) = %.3f, " % (key, probTable[key])
@@ -69,7 +69,7 @@ while col < seqLen:
          insert_state_end_col = col+1
 
       if insert_state_end_col != None:
-         print("Column %d through %d is an insert state I_%d with emission prob:" % (insert_state_start_col, insert_state_end_col-1, insert_state_idx))
+         print("Column %d through %d is an INSERT state (I_%d) with emission prob:" % (insert_state_start_col, insert_state_end_col-1, insert_state_idx))
          probTable = getEmissionProb(insert_state_start_col, insert_state_end_col, seqs)
          msg = ""
          for key in probTable: msg += "E(%s) = %.3f, " % (key, probTable[key])
