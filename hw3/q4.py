@@ -1,41 +1,30 @@
 import numpy as np 
 OBSER = 'EGCJ'
 SUBMATRIX = np.array([[9, -4, 2, 2], [-4, 9, -5, -5], [2, -5, 10, 7], [2, -5, 7, 10]])
+LINEAR_GAP_PENALTY = -3
 
 def subScore(x, y):
    return SUBMATRIX[x, y]
 
-def gapPenalty(n):
-   return -3 * n
-
 def getOptimalScore(seq1, seq2):
    N = len(seq1)
    M = len(seq2)
-   F = np.zeros((N+1, M+1))
-   G = np.zeros((N+1, M+1))
+   F = np.empty((N+1, M+1))
 
    #init
    for i in range(N+1):
-      G[i,0] = 0
-      F[i,0] = 0
+      F[i,0] = LINEAR_GAP_PENALTY*i
 
    for j in range(M+1):
-      G[0,j] = j
-      s = 0
-      for n in range(1, j+1): s+=gapPenalty(n)
-      F[0,j] = s
+      F[0,j] = LINEAR_GAP_PENALTY*j
 
    #dynamic program
    for i in range(1, N+1):
       for j in range(1, M+1):
          c1 = F[i-1, j-1] + subScore(seq1[i-1], seq2[j-1])
-         c2 = F[i-1, j] + gapPenalty(G[i-1, j])
-         c3 = F[i, j-1] + gapPenalty(G[i, j-1])
+         c2 = F[i-1, j] + LINEAR_GAP_PENALTY 
+         c3 = F[i, j-1] + LINEAR_GAP_PENALTY 
          F[i,j] = max(c1, c2, c3)
-         if F[i,j] == c1: G[i,j] = 0
-         elif F[i,j] == c2: G[i,j] = G[i-1, j] + 1
-         elif F[i,j] == c3: G[i,j] = G[i, j-1] + 1
-         else: raise Exception("Impossible")
 
    return F[N, M]
 
