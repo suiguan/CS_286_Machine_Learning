@@ -19,8 +19,8 @@ Y2 = np.array([-4, -5, 0, 3, 1, -2])
 Y3 = np.array([2, 3, 0, 1, 3, 2])
 Y4 = np.array([3, 2, 1, 0, 3, 2])
 
-print("score(Y1) = %.2f" % pca.score(mu, [u1,u2], scoreMat, Y1))
-print("score(Y2) = %.2f" % pca.score(mu, [u1,u2], scoreMat, Y2))
-print("score(Y3) = %.2f" % pca.score(mu, [u1,u2], scoreMat, Y3))
-print("score(Y4) = %.2f" % pca.score(mu, [u1,u2], scoreMat, Y4))
+print("score(Y1) = %.4f" % pca.score(mu, [u1,u2], scoreMat, Y1))
+print("score(Y2) = %.4f" % pca.score(mu, [u1,u2], scoreMat, Y2))
+print("score(Y3) = %.4f" % pca.score(mu, [u1,u2], scoreMat, Y3))
+print("score(Y4) = %.4f" % pca.score(mu, [u1,u2], scoreMat, Y4))
 
