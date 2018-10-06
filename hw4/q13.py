@@ -10,21 +10,18 @@ u1 = np.array([0.1641, 0.6278, -0.2604, -0.5389, 0.4637, 0.0752])
 u2 = np.array([0.2443, 0.1070, -0.8017, 0.4277, -0.1373, -0.2904])
 uList = [u1, u2]
 
-#score matrix delta from (4.12)
-scoreMat =np.array([[-1.1069, 1.2794, -2.6800, 2.5076],\
-                    [1.5480, 0.5484, -1.2085, -0.8879]]) 
-
 #q13 (a)
 M1 = np.array([1, -1, 1, -1, -1, 1])
 M2 = np.array([-2, 2, 2, -1, -2, 2])
 M3 = np.array([1, 3, 0, 1, 3, 1])
 M4 = np.array([2, 3, 1, 1, -2, 0])
 
+#get A and score matrix from malware samples
+_mA, _ = pca.getAMu([M1, M2, M3, M4], mu)
+_mScoreMat = pca.getScoreMat(_mA, uList)
 print("(a)");
-print("score(M1) = %.4f" % pca.score(mu, uList, scoreMat, M1))
-print("score(M2) = %.4f" % pca.score(mu, uList, scoreMat, M2))
-print("score(M3) = %.4f" % pca.score(mu, uList, scoreMat, M3))
-print("score(M4) = %.4f" % pca.score(mu, uList, scoreMat, M4))
+print("malware score matrix:")
+print(_mScoreMat)
 
 #q13 (b)
 B1 = np.array([-1, 2, 1, 2, -1, 0])
@@ -32,9 +29,8 @@ B2 = np.array([-2, 1, 2, 3, 2, 1])
 B3 = np.array([-1, 3, 0, 1, 3, -1])
 B4 = np.array([0, 2, 3, 1, 1, -2])
 
-#get A matrix from benign samples
-_bA, _ = pca.getAMu([B1, B2, B3, B4])
-
+#get A and score matrix from benign samples
+_bA, _ = pca.getAMu([B1, B2, B3, B4], mu)
 _bScoreMat = pca.getScoreMat(_bA, uList)
 print("(b)")
 print("benign score matrix:")
@@ -44,7 +40,7 @@ print(_bScoreMat)
 #where s1 is score against malware score mat
 #where s2 is score against benign score mat
 def classify(Y):
-   s1 = pca.score(mu, uList, scoreMat, Y)
+   s1 = pca.score(mu, uList, _mScoreMat, Y)
    s2 = pca.score(mu, uList, _bScoreMat, Y)
    return s1, s2, s1 <= s2
 

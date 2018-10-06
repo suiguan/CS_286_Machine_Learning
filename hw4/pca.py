@@ -26,7 +26,7 @@ def getScoreMat(A, uList):
    uRowMat = np.concatenate([u.reshape((1,-1)) for u in uList], axis=0)
    return np.dot(uRowMat, A)
 
-def getAMu(xList):
+def getAMu(xList, row_mean=None):
    N = len(xList) #number of train data
 
    #reshape each train vector to 1xm matrix
@@ -37,7 +37,7 @@ def getAMu(xList):
    B = np.concatenate(arr, axis=1)
 
    #subtract row mean to create A matrix
-   row_mean = np.mean(B, axis=1)
+   if row_mean == None: row_mean = np.mean(B, axis=1)
    A = B - row_mean.reshape((-1, 1))
 
    return A, row_mean
