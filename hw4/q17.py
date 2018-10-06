@@ -11,6 +11,10 @@ e1 = 4.0833
 e2 = 1.2364
 e3 = 0.7428
 
-print("l1 = %s" % (math.sqrt(e1)*u1,))
-print("l2 = %s" % (math.sqrt(e2)*u2,))
-print("l3 = %s" % (math.sqrt(e3)*u3,))
+l1 = math.sqrt(e1)*u1
+l2 = math.sqrt(e2)*u2
+l3 = math.sqrt(e3)*u3
+print("l1 = %s" % l1)
+print("l2 = %s" % l2)
+print("l3 = %s" % l3)
+print("l1^2 + l2^2 = %s" % ((l1**2)+(l2**2),) )
