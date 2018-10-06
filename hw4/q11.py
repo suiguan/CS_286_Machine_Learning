@@ -15,7 +15,8 @@ print("using only significant eigenvalues: %s" % [eigVal[e] for e in significant
 uList = []
 for idx in significantIdx: uList.append(u[:,idx]) 
 scoreMat = pca.getScoreMat(A, uList)
-print("scoreMat = %s" % scoreMat)
+print("score matrix:")
+print(scoreMat)
 
 Y1 = np.array([1,5,1,5,5,1,1,3])
 Y2 = np.array([-2,3,2,3,0,2,-1,1])
