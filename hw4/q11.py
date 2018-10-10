@@ -7,10 +7,16 @@ X2 = np.array([-2,3,2,3,0,2,-1,1])
 X3 = np.array([-1,3,3,1,-1,4,5,2])
 X4 = np.array([3,-1,0,3,2,-1,3,0])
 A, mu, u, eigVal = pca.train([X1, X2, X3, X4])
+C = (1.0/4)*np.dot(A, np.transpose(A))
+print("(a)")
 print("eigenvalues = %s" % eigVal)
+print("C =")
+print(C)
+print("")
 
 #(q4-11-b)
 significantIdx = [0, 1, 2] #select the indexes of the significant eigenvalues from the trained PCA 
+print("(b)")
 print("using only significant eigenvalues: %s" % [eigVal[e] for e in significantIdx])
 uList = []
 for idx in significantIdx: uList.append(u[:,idx]) 

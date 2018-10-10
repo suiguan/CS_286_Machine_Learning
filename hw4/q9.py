@@ -20,7 +20,7 @@ print("(a)")
 print("C = ")
 print(C)
 print("total variance = %.4f" % np.sum(C.diagonal()))
-print("\n")
+print("")
 
 #(b)
 print("(b)")
