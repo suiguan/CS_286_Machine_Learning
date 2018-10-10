@@ -16,9 +16,14 @@ e3 = 0.7428
 #(a)
 A, mu = pca.getAMu([x1,x2,x3,x4])
 C = (1.0/4)*np.dot(A, np.transpose(A))
-print("C = %s" % C)
+print("(a)")
+print("C = ")
+print(C)
 print("total variance = %.4f" % np.sum(C.diagonal()))
+print("\n")
 
 #(b)
+print("(b)")
+print("all eigenvalues: e1=%s, e2=%s, e3=%s" % (e1, e2, e3))
 print("total variance in projection space = %.4f" % sum([e1,e2,e3]))
 
