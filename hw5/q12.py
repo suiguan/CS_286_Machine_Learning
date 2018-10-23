@@ -39,9 +39,9 @@ with open('malwareBenignScores.txt') as f:
          test_x.append(bf)
          test_y.append(0) #0 means benign
 
-clf = LinearSVC(random_state=0, tol=1e-5)
+clf = LinearSVC()
 print("starting training the linear svm using the first 20 samples as training data")
 clf.fit(train_x, train_y)
 print("trained svm coefficient for %s: %s" % ([features_names[i] for i in use_features], clf.coef_,))
-print("trained svm mean accuaray on test data (last 20 samples) = %s" % clf.score(test_x, test_y))
+print("trained svm mean accuracy on test data (last 20 samples) = %s" % clf.score(test_x, test_y))
 
