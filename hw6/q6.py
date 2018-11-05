@@ -77,10 +77,13 @@ if __name__ == '__main__':
 
    #train MLP
    print("starting training MLP using SGD with alpha %s, %d epochs" % (alpha, epochs))
+   print("Initial weights (w0,w1,w2,w3,w4,w5) = ")
+   print(ws)
    for ep in range(epochs):
       for x0, x1, z in train: 
          sgd(alpha, ws, x0, x1, z)
-   print("Finished training. Weights = %s" % (ws,))
+   print("Finished training. Weights (w0,w1,w2,w3,w4,w5) = ")
+   print(ws)
 
    #calculate accuracy on train data
    correct = 0
