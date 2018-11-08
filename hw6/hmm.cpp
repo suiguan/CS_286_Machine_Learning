@@ -13,9 +13,9 @@
 
 #define MAX_INT 9223372036854775807
 
-#define GRAD_DESCENT
-#define TEMP 1
-#define LEARNING_RATE 1
+#define GRAD_DESCENT //define this to use gradient descent to train
+#define TEMP 1.0
+#define LEARNING_RATE 1.0
 
 static const std::string ObserSet = "abcdefghijklmnopqrstuvwxyz ";
 
@@ -387,7 +387,7 @@ void HMM::reEstimateModel(int* obserArr, int T)
 
    float _C = 0;
    for (int t = 0; t < T; t++) {
-      _C += *getC(t);
+      _C += log(*getC(t));
    }
    float aOverC = LEARNING_RATE / _C; 
 
@@ -559,7 +559,11 @@ int main(int argc, const char** argv) {
       return -3;
    }
 
+#ifdef GRAD_DESCENT
+   printf("start training HMM for seq N = %d, M = %d, minIters = %d, eps = %.6f, T = %d, learning rate = %f, temp = %f\n", N, M, minIters, epsilon, T, LEARNING_RATE, TEMP);
+#else
    printf("start training HMM for seq N = %d, M = %d, minIters = %d, eps = %.6f, T = %d\n", N, M, minIters, epsilon, T);
+#endif
    hmm->fit(obsers, T);
 
 #ifdef USE_FIXED_DIGRAPH
