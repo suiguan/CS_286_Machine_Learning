@@ -82,15 +82,16 @@ if __name__ == '__main__':
    for ep in range(epochs):
       for x0, x1, z in train: 
          sgd(alpha, ws, x0, x1, z)
-   print("Finished training. Weights (w0,w1,w2,w3,w4,w5) = ")
+   print("Finished training. Final weights (w0,w1,w2,w3,w4,w5) = ")
    print(ws)
 
    #calculate accuracy on train data
+   print("computed MLP results for each training sample:")
    correct = 0
    for x0, x1, z in train: 
       _, _, _, _, v10, v11, _ = forward(ws, x0, x1, z)
       pred = v10 + v11
-      print("input (x0, x1) = (%s, %s), MLP output %s, expected %d" % (x0, x1, pred, z))
+      print("train sample (x0, x1) = (%s, %s), MLP output %s, expected %d" % (x0, x1, pred, z))
       if int(pred + 0.5) == z: correct += 1
    print("train accuracy: %d/%d = %.3f%%" % (correct, len(train), correct*100/len(train)))
 

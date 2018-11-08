@@ -9,8 +9,8 @@ except:
    maxint = 9223372036854775807
 
 #hyper parameters for training HMM with gradident descent
-TEMP = 50
-LEARNING_RATE = 1
+TEMP = -1
+LEARNING_RATE = 0.5
 
 class HMM:
    def __init__(self, N, M, minIters, epsilon):
