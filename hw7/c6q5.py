@@ -5,7 +5,9 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-#old faithful data with (duration, wait)
+numK = 3 #choice of K, can only be 2 or 3
+
+#hardcoded old faithful data with (duration, wait) in Table 6.6
 data =\
    [
    (3.6, 79), (1.8, 54), (2.283, 62), (3.333, 74), (2.883, 55),
@@ -20,12 +22,21 @@ maxDuration = max([d[0] for d in data])
 minWait = min([d[1] for d in data])
 maxWait = max([d[1] for d in data])
 
-centroids =\
+if numK == 2:
+   centroids =\
    [
    (random.uniform(minDuration, maxDuration), random.uniform(minWait, maxWait)),
    (random.uniform(minDuration, maxDuration), random.uniform(minWait, maxWait)),
-#   (random.uniform(minDuration, maxDuration), random.uniform(minWait, maxWait)),
    ]
+elif numK == 3:
+   centroids =\
+   [
+   (random.uniform(minDuration, maxDuration), random.uniform(minWait, maxWait)),
+   (random.uniform(minDuration, maxDuration), random.uniform(minWait, maxWait)),
+   (random.uniform(minDuration, maxDuration), random.uniform(minWait, maxWait)),
+   ]
+else:
+   raise Exception("Unsupported K %d" % numK)
 
 def distance(x1, x2):
    return math.sqrt(math.pow((x1[0] - x2[0]), 2) + math.pow((x1[1] - x2[1]), 2))
