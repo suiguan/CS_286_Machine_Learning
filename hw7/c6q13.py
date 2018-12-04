@@ -5,14 +5,31 @@ import math
 import matplotlib.pyplot as plt
 
 #initial guess for the parameters
-u1 = np.array([[2.5], [65.0]]) 
-s1 = np.array([[1.0, 5.0], [5.0, 100.0]])
+#from (6.23) and (6.24)
+#u1 = np.array([[2.5], [65.0]]) 
+#s1 = np.array([[1.0, 5.0], [5.0, 100.0]])
 
-u2 = np.array([[3.5], [70.0]]) 
-s2 = np.array([[2.0, 10.0], [10.0, 200.0]])
+#u2 = np.array([[3.5], [70.0]]) 
+#s2 = np.array([[2.0, 10.0], [10.0, 200.0]])
 
-thetas = [[u1, s1], [u2, s2]]
-taus = [0.6, 0.4]
+#thetas = [[u1, s1], [u2, s2]]
+#taus = [0.6, 0.4]
+#=====
+
+#custom initial values
+u1 = np.array([[3.5], [55.0]]) 
+s1 = np.array([[1.2, 5.8], [5.8, 120.0]])
+
+u2 = np.array([[4.5], [75.0]]) 
+s2 = np.array([[2.4, 9.0], [9.0, 200.0]])
+
+u3 = np.array([[2.5], [58.0]]) 
+s3 = np.array([[1.0, 6.0], [6.0, 125.0]])
+
+thetas = [[u1, s1], [u2, s2], [u3, s3]]
+taus = [0.75, 0.1, 0.15]
+#=====
+
 
 #hardcoded old faithful data with (duration, wait) in Table 6.6
 xData = [
@@ -96,7 +113,7 @@ np.set_printoptions(precision=4)
 print("initial guess:")
 print(getParamStr(taus, thetas))
 
-minIters = 100 #iterations to run
+minIters = 1000 #iterations to run
 iters = 0
 while True:
    if iters >= minIters: break 
