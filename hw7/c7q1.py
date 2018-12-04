@@ -20,8 +20,8 @@ colors = [red, red, red, red, red, red, red, red, red, red,
 #plot each points with their colors
 xs = np.array([p[0] for p in points])
 ys = np.array([p[1] for p in points])
+plt.figure(0)
 plt.scatter(xs, ys, c=colors)
-plt.show()
 
 
 def distance(p1, p2):
@@ -84,5 +84,8 @@ for i in range(n):
       x0p[i*n+j] = x0[i]
       x1p[i*n+j] = x1[j] 
 
+plt.figure(1)
 plt.scatter(x0p, x1p, c=c)
+
+#display graphs
 plt.show()
