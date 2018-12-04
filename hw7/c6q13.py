@@ -84,7 +84,7 @@ def getParamStr(taus, thetas):
    for j in range(numJ): ss += ("%.4f, " % taus[j])
    ss = ss[:-2] + ")\n"
    for j in range(numJ): 
-      ss += ("theta_%d :\nu_%d =\n%s\ns_%d=\n%s\n" % (j, j, thetas[j][0], j, thetas[j][1]))
+      ss += ("theta_%d :\nu_%d =\n%s\ns_%d=\n%s\n" % (j+1, j+1, thetas[j][0], j+1, thetas[j][1]))
    return ss
 
 
