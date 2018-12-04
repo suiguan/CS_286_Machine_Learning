@@ -2,6 +2,7 @@
 
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 #initial guess for the parameters
 u1 = np.array([[2.5], [65.0]]) 
@@ -116,5 +117,39 @@ print(getParamStr(taus, thetas))
 #for i in range(len(xData)):
 #   for j in range(numJ):
 #      print("p_%d,%d = %.4f" % (j+1, i+1, pjiList[j][i]))
+
+
+#assign data point the highest probability cluster
+clusterIds = []
+for xi in xData:
+   probs = []
+   for j in range(numJ): probs.append(f(xi, thetas[j]))
+   clusterIds.append(probs.index(max(probs)))
+
+#color constants
+red = (1, 0, 0)
+blue = (0, 0, 1)
+green = (0, 1, 0)
+black = (0, 0, 0)
+colors = [red, green, blue]
+
+#plot the center of the thetas using black color
+c = []
+xs = []
+ys = []
+for j in range(numJ):
+   xs.append(thetas[j][0][0,0])
+   ys.append(thetas[j][0][1,0])
+   c.append(black)
+
+#plot the data point with same color for the same clusters
+for idx, xi in enumerate(xData):
+   xs.append(xi[0,0])
+   ys.append(xi[1,0])
+   c.append(colors[clusterIds[idx]])
+
+#plot the clustering solution
+plt.scatter(xs, ys, c=c)
+plt.show()
 
 
