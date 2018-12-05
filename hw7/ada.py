@@ -34,7 +34,6 @@ c27 = [-1, 1, -1, 1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1,
 c28 = [1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, -1, 1, -1]
 c29 = [1, 1, -1, 1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, -1]
 cs = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28, c29]
-numX = len(z)
 
 def sign(s):
    if s < 0: return -1
@@ -55,6 +54,7 @@ def ada(cs, z, numX): #Algorithm 3.1: AdaBoost
    uj = []
    for j in range(L): uj.append(0)
 
+   CmList = []
    #repeat ada boost
    for m in range(L):
       wi = []
@@ -80,19 +80,34 @@ def ada(cs, z, numX): #Algorithm 3.1: AdaBoost
       for xi in range(numX):
          Cm[xi] = Cm[xi] + (am*km[xi])
 
-      numHits = hits(Cm, z, numX) 
       #We can return earlier if hits already == numX
+      #numHits = hits(Cm, z, numX) 
 
-      #print the intermediate Cm for this problem, print to 4 decials as in Table 3
-      print("C%d = %s, hits = %d" % (m+1, [float("%0.4f" % _e) for _e in Cm], numHits))
-
+      #keep all intermediate Cm
+      CmList.append(list(Cm))
 
    #return
-   return Cm
+   return CmList
 
 
 #main(): for this problem we just need the print in ada()
-ada(cs, z, numX)
+numX = len(z)
+CmList = ada(cs, z, numX)
+
+#print the result Table
+msg = "zi\t"
+for i in range(len(CmList)): msg += ("C%d\t" % i)
+msg += "\n\n"
+for xi in range(numX):
+   msg += "%+d\t" % z[xi]
+   for cm in CmList: msg += ("%+.4f\t" % cm[xi])
+   msg += "\n"
+
+msg += "\nHits\t"
+for cm in CmList: msg += ("%d\t" % hits(cm, z, numX))
+msg += "\n"
+print(msg)
+
 
 
 
