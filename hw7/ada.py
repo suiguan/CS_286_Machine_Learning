@@ -94,18 +94,25 @@ def ada(cs, z, numX): #Algorithm 3.1: AdaBoost
 numX = len(z)
 CmList = ada(cs, z, numX)
 
+subset = None #print only subset [3,4, etc...] of the Classifiers, set to None to print all
+
 #print the result Table
 msg = "zi\t"
-for i in range(len(CmList)): msg += ("C%d\t" % i)
+for i in range(len(CmList)): 
+   if subset == None or i in subset: msg += ("C%d\t" % (i+1,))
 msg += "\n\n"
 for xi in range(numX):
    msg += "%+d\t" % z[xi]
-   for cm in CmList: msg += ("%+.4f\t" % cm[xi])
+   for i, cm in enumerate(CmList): 
+      if subset == None or i in subset: msg += ("%+.4f\t" % cm[xi])
    msg += "\n"
 
 msg += "\nHits\t"
-for cm in CmList: msg += ("%d\t" % hits(cm, z, numX))
+for i, cm in enumerate(CmList): 
+   if subset == None or i in subset: msg += ("%d\t" % hits(cm, z, numX))
 msg += "\n"
+
+#print
 print(msg)
 
 
