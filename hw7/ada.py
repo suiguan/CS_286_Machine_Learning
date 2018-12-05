@@ -46,7 +46,7 @@ def hits(c, z, numX):
       if sign(c[xi]) == z[xi]: h += 1
    return h
 
-def ada(cs, z, numX):
+def ada(cs, z, numX): #Algorithm 3.1: AdaBoost
    L = len(cs) 
 
    #initialize
