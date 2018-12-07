@@ -78,22 +78,24 @@ for e, m in ems:
 
    print("For e = %.1f, m = %d, # clusters = %d" % (e, m, len(clusters)))
    for i, c in enumerate(clusters):
-      print("cluster %d (len=%d) = %s" % (i, len(c), c))
+      #print("cluster %d: (len=%d) = %s" % (i, len(c), c))
+      print("cluster %d: (len=%d)" % (i, len(c)))
       totalPts += len(c)
 
-   #pts not in any clusters are the noise
-   noise = []
+   #pts not in any clusters are the outliers
+   outliers = []
    for idx in range(len(Xs)):
-      if not isPtIdxInClusters(idx, clusters): noise.append(idx)
+      if not isPtIdxInClusters(idx, clusters): outliers.append(idx)
          
-   print("noise (len=%d) = %s" % (len(noise), noise))
-   totalPts += len(noise)
+   #print("outliers: (len=%d) = %s" % (len(outliers), outliers))
+   print("outliers: (len=%d)" % (len(outliers),))
+   totalPts += len(outliers)
    print("total # points = %d" % totalPts)
    print("\n")
 
    #visualize the clusters
    N = len(clusters)
-   plt.figure("e=%.1f, m=%d, # clusters = %d, # noise = %d" % (e,m,N,len(noise)))
+   plt.figure("e=%.1f, m=%d, # clusters = %d, # outliers = %d" % (e,m,N,len(outliers)))
    cmap = plt.cm.get_cmap("hsv", N+1)
    for i in range(N):
       xs = []
@@ -103,10 +105,10 @@ for e, m in ems:
          ys.append(Xs[idx][1])
       plt.scatter(xs, ys, c=cmap(i))
 
-   #noise
+   #outliers
    xs = []
    ys = []
-   for idx in noise:
+   for idx in outliers:
       xs.append(Xs[idx][0])
       ys.append(Xs[idx][1])
    plt.scatter(xs, ys, c="black", marker='x')
