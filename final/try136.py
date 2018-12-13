@@ -2,7 +2,8 @@ import re
 from constraints import numConstraintsMet
 
 #f = 'brown.txt' # try another book as well?
-f = 'ZodiacWriting.txt'
+#f = 'ZodiacWriting.txt'
+f = 'dummy.txt'
 
 doc = open(f, 'r').read().lower()
 
